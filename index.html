@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Sports 2 Hindi HD - Engine</title>
+
+```
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
+
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        overflow: hidden;
+    }
+
+    #videoContainer {
+        width: 100%;
+        height: 100%;
+    }
+
+    video {
+        width: 100%;
+        height: 100%;
+    }
+
+    #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+    }
+
+    .spinner {
+        border: 4px solid #ccc;
+        border-top: 4px solid red;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
+
+    #liveBadge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: red;
+        color: white;
+        padding: 5px 10px;
+        font-weight: bold;
+        border-radius: 5px;
+        z-index: 20;
+    }
+
+    #channelName {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: white;
+        font-size: 14px;
+        background: rgba(0,0,0,0.6);
+        padding: 5px 10px;
+        border-radius: 5px;
+        z-index: 20;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<div id="liveBadge">LIVE</div>
+<div id="channelName">Loading...</div>
+
+<div id="loading">
+    <div class="spinner"></div>
+</div>
+
+<div id="videoContainer">
+    <video id="videoPlayer" autoplay playsinline></video>
+</div>
+
+<script>
+const API_URL = "https://tv1.akcoder777.workers.dev";
+let player = null;
+let currentChannel = null;
+
+async function startStreaming() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        // ✅ Star Sports 2 Hindi filter
+        const channel = data.find(ch =>
+            ch.channel_name.toLowerCase().includes("star sports 2") &&
+            ch.channel_name.toLowerCase().includes("hindi")
+        );
+
+        if (!channel) {
+            document.getElementById('channelName').innerText = "Channel Offline";
+            return;
+        }
+
+        currentChannel = channel;
+        document.getElementById("channelName").innerText = channel.channel_name;
+
+        shaka.polyfill.installAll();
+
+        const video = document.getElementById('videoPlayer');
+        const container = document.getElementById('videoContainer');
+
+        video.muted = true; // autoplay fix
+
+        player = new shaka.Player(video);
+        new shaka.ui.Overlay(player, container, video);
+
+        // ✅ Error handling + auto reconnect
+        player.addEventListener('error', async (e) => {
+            console.log("Error:", e.detail);
+            document.getElementById('loading').style.display = 'block';
+
+            setTimeout(async () => {
+                try {
+                    await player.load(currentChannel.channel_url);
+                    document.getElementById('loading').style.display = 'none';
+                } catch {
+                    document.getElementById('channelName').innerText = "Stream Failed";
+                }
+            }, 3000);
+        });
+
+        // ✅ Player config
+        player.configure({
+            drm: {
+                clearKeys: {
+                    [channel.keyId]: channel.key
+                }
+            },
+            streaming: {
+                bufferingGoal: 8,
+                rebufferingGoal: 2,
+                lowLatencyMode: true
+            }
+        });
+
+        // ✅ Network filter (fixed token handling)
+        player.getNetworkingEngine().registerRequestFilter((type, request) => {
+
+            request.headers["Referer"] = "https://www.jiotv.com/";
+            request.headers["User-Agent"] = "Mozilla/5.0";
+
+            if (channel.cookie) {
+                request.headers["Cookie"] = channel.cookie;
+
+                const tokenMatch = channel.cookie.match(/__hdnea__=([^;]+)/);
+
+                if (tokenMatch) {
+                    const token = "__hdnea__=" + tokenMatch[1];
+
+                    if (
+                        type === shaka.net.NetworkingEngine.RequestType.SEGMENT ||
+                        type === shaka.net.NetworkingEngine.RequestType.MANIFEST
+                    ) {
+                        if (!request.uris[0].includes("__hdnea__")) {
+                            const sep = request.uris[0].includes("?") ? "&" : "?";
+                            request.uris[0] += sep + token;
+                        }
+                    }
+                }
+            }
+        });
+
+        await player.load(channel.channel_url);
+
+        document.getElementById('loading').style.display = 'none';
+
+    } catch (e) {
+        console.error(e);
+        document.getElementById('channelName').innerText = "Error Loading Stream";
+    }
+}
+
+window.onload = startStreaming;
+</script>
+
+</body>
+</html>
