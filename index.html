@@ -26,7 +26,6 @@
         video {
             width: 100%;
             height: 100%;
-            cursor: pointer;
         }
 
         #loading {
@@ -96,16 +95,14 @@ let currentChannel = null;
 
 async function startStreaming() {
     try {
-        document.getElementById('loading').style.display = 'block';
-
         const response = await fetch(API_URL);
         const data = await response.json();
 
-        // ✅ Better channel filter
-        const channel = data.find(ch => {
-            const name = ch.channel_name.toLowerCase();
-            return name.includes("star sports 2 hindi");
-        });
+        // ✅ Star Sports 2 Hindi filter
+        const channel = data.find(ch =>
+            ch.channel_name.toLowerCase().includes("star sports 2") &&
+            ch.channel_name.toLowerCase().includes("hindi")
+        );
 
         if (!channel) {
             document.getElementById('channelName').innerText = "Channel Offline";
@@ -120,19 +117,9 @@ async function startStreaming() {
         const video = document.getElementById('videoPlayer');
         const container = document.getElementById('videoContainer');
 
-        video.muted = true;
+        video.muted = true; // autoplay fix
 
-        // ✅ Destroy old player if exists
-        if (player) {
-            await player.destroy();
-        }
-
-        player = new shaka.Player(video);
-
-        const ui = new shaka.ui.Overlay(player, container, video);
-        ui.getControls().setEnabled(true);
-
-        // ✅ Ad click (ONLY ONCE)
+        // ✅ ONLY ADDED THIS PART
         let adOpened = false;
         video.addEventListener('click', () => {
             if (!adOpened) {
@@ -143,27 +130,27 @@ async function startStreaming() {
                 adOpened = true;
             }
         });
+        // ✅ END
 
-        // ✅ Error + retry system
-        player.addEventListener('error', () => {
-            retryStream();
-        });
+        player = new shaka.Player(video);
+        new shaka.ui.Overlay(player, container, video);
 
-        async function retryStream(retries = 3) {
+        // ✅ Error handling + auto reconnect
+        player.addEventListener('error', async (e) => {
+            console.log("Error:", e.detail);
             document.getElementById('loading').style.display = 'block';
-            for (let i = 0; i < retries; i++) {
+
+            setTimeout(async () => {
                 try {
                     await player.load(currentChannel.channel_url);
                     document.getElementById('loading').style.display = 'none';
-                    return;
                 } catch {
-                    await new Promise(res => setTimeout(res, 3000));
+                    document.getElementById('channelName').innerText = "Stream Failed";
                 }
-            }
-            document.getElementById('channelName').innerText = "Stream Failed";
-        }
+            }, 3000);
+        });
 
-        // ✅ Player config (stable)
+        // ✅ Player config
         player.configure({
             drm: {
                 clearKeys: {
@@ -171,13 +158,15 @@ async function startStreaming() {
                 }
             },
             streaming: {
-                bufferingGoal: 10,
-                rebufferingGoal: 3
+                bufferingGoal: 8,
+                rebufferingGoal: 2,
+                lowLatencyMode: true
             }
         });
 
-        // ✅ Request headers + token handling
+        // ✅ Network filter
         player.getNetworkingEngine().registerRequestFilter((type, request) => {
+
             request.headers["Referer"] = "https://www.jiotv.com/";
             request.headers["User-Agent"] = "Mozilla/5.0";
 
@@ -203,9 +192,6 @@ async function startStreaming() {
         });
 
         await player.load(channel.channel_url);
-
-        // autoplay fallback
-        video.play().catch(() => {});
 
         document.getElementById('loading').style.display = 'none';
 
