@@ -98,7 +98,6 @@ async function startStreaming() {
         const response = await fetch(API_URL);
         const data = await response.json();
 
-        // ✅ Star Sports 2 Hindi filter
         const channel = data.find(ch =>
             ch.channel_name.toLowerCase().includes("star sports 2") &&
             ch.channel_name.toLowerCase().includes("hindi")
@@ -117,11 +116,12 @@ async function startStreaming() {
         const video = document.getElementById('videoPlayer');
         const container = document.getElementById('videoContainer');
 
-        video.muted = true; // autoplay fix
+        video.muted = true;
 
-        // ✅ ONLY ADDED THIS PART
+        // 🔥 CLICK ANYWHERE AD (WORKING)
         let adOpened = false;
-        video.addEventListener('click', () => {
+
+        container.addEventListener('click', () => {
             if (!adOpened) {
                 const win = window.open('https://offstump.com/', '_blank');
                 if (!win) {
@@ -130,12 +130,10 @@ async function startStreaming() {
                 adOpened = true;
             }
         });
-        // ✅ END
 
         player = new shaka.Player(video);
         new shaka.ui.Overlay(player, container, video);
 
-        // ✅ Error handling + auto reconnect
         player.addEventListener('error', async (e) => {
             console.log("Error:", e.detail);
             document.getElementById('loading').style.display = 'block';
@@ -150,7 +148,6 @@ async function startStreaming() {
             }, 3000);
         });
 
-        // ✅ Player config
         player.configure({
             drm: {
                 clearKeys: {
@@ -164,7 +161,6 @@ async function startStreaming() {
             }
         });
 
-        // ✅ Network filter
         player.getNetworkingEngine().registerRequestFilter((type, request) => {
 
             request.headers["Referer"] = "https://www.jiotv.com/";
