@@ -1,181 +1,230 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ten HD</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body {
-            background: #000;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-        .shaka-video-container {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-        video {
-            width: 100%;
-            height: 100%;
-            background: #000;
-            object-fit: contain;
-        }
-        .shaka-spinner-container,
-        .shaka-spinner,
-        .shaka-spinner-svg {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-        }
-        /* CRICKCAST Watermark */
-        .watermark {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            z-index: 100;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(0, 229, 255, 0.25);
-            border-radius: 4px;
-            padding: 3px 8px 3px 6px;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-        }
-        .watermark-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #00e5ff;
-            animation: pulse 2s ease-in-out infinite;
-            flex-shrink: 0;
-        }
-        .watermark-text {
-            font-family: system-ui, -apple-system, sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            color: #00e5ff;
-            text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-    </style>
+
+<meta charset="UTF-8">
+<title>CRICKLY FANCODE LIVE WEB PLAYER</title>
+
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- YOUR MAIN CSS -->
+<link rel="stylesheet" href="style.css">
+
+<!-- SHAKA PLAYER -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+
+<style>
+
+/* PLAYER ONLY STYLES */
+
+html,body{
+margin:0;
+padding:0;
+background:#000;
+height:100%;
+width:100%;
+overflow:hidden;
+font-family:'Poppins',sans-serif;
+}
+
+.video-container{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+}
+
+.shaka-video-container{
+width:100%;
+height:100%;
+}
+
+video{
+width:100%;
+height:100%;
+object-fit:contain;
+background:#000;
+}
+
+/* LOADING */
+
+.loading-overlay{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+background:#000;
+color:#fff;
+z-index:2000;
+font-size:18px;
+}
+
+.spinner{
+border:4px solid rgba(255,255,255,.2);
+border-top:4px solid #3b82f6;
+border-radius:50%;
+width:40px;
+height:40px;
+animation:spin 1s linear infinite;
+margin-bottom:12px;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+
+</style>
+
 </head>
+
 <body>
-    <div class="shaka-video-container" data-shaka-player>
-        <video autoplay playsinline preload="metadata" poster="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgwIiBoZWlnaHQ9IjcyMCIgdmlld0JveD0iMCAwIDEyODAgNzIwIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iYmciIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjcwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMDFhMmUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDAwMDAwIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iZ2xvdyI+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjgiIHJlc3VsdD0iYmx1ciIvPgogICAgICA8ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImJsdXIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDxnIHN0cm9rZT0iIzAwZTVmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDQiIHN0cm9rZS13aWR0aD0iMSI+CiAgICA8bGluZSB4MT0iMCIgeTE9IjE4MCIgeDI9IjEyODAiIHkyPSIxODAiLz4KICAgIDxsaW5lIHgxPSIwIiB5MT0iMzYwIiB4Mj0iMTI4MCIgeTI9IjM2MCIvPgogICAgPGxpbmUgeDE9IjAiIHkxPSI1NDAiIHgyPSIxMjgwIiB5Mj0iNTQwIi8+CiAgICA8bGluZSB4MT0iMzIwIiB5MT0iMCIgeDI9IjMyMCIgeTI9IjcyMCIvPgogICAgPGxpbmUgeDE9IjY0MCIgeTE9IjAiIHgyPSI2NDAiIHkyPSI3MjAiLz4KICAgIDxsaW5lIHgxPSI5NjAiIHkxPSIwIiB4Mj0iOTYwIiB5Mj0iNzIwIi8+CiAgPC9nPgogIDxjaXJjbGUgY3g9IjY0MCIgY3k9IjMxMCIgcj0iMjAwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLW9wYWNpdHk9IjAuMTIiLz4KICA8Y2lyY2xlIGN4PSI2NDAiIGN5PSIzMTAiIHI9IjE2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBlNWZmIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1vcGFjaXR5PSIwLjA4Ii8+CiAgPGNpcmNsZSBjeD0iNjQwIiBjeT0iMzEwIiByPSI3MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBlNWZmIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuNiIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPHBhdGggZD0iTSA1OTAgMjcwIFEgNjQwIDMxMCA1OTAgMzUwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIvPgogIDxwYXRoIGQ9Ik0gNjkwIDI3MCBRIDY0MCAzMTAgNjkwIDM1MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBlNWZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1vcGFjaXR5PSIwLjUiLz4KICA8dGV4dCB4PSI2NDAiIHk9IjQ0OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIKICAgIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIC1hcHBsZS1zeXN0ZW0sIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgZm9udC1zaXplPSI4OCIgZm9udC13ZWlnaHQ9IjgwMCIgbGV0dGVyLXNwYWNpbmc9IjEyIgogICAgZmlsbD0iIzAwZTVmZiIgZmlsdGVyPSJ1cmwoI2dsb3cpIiBvcGFjaXR5PSIwLjk1Ij5DUklDS0NBU1Q8L3RleHQ+CiAgPHRleHQgeD0iNjQwIiB5PSI0OTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiCiAgICBmb250LWZhbWlseT0ic3lzdGVtLXVpLCAtYXBwbGUtc3lzdGVtLCBBcmlhbCwgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI0MDAiIGxldHRlci1zcGFjaW5nPSI2IgogICAgZmlsbD0iIzAwZTVmZiIgb3BhY2l0eT0iMC40NSI+TElWRSBDUklDS0VUIFNUUkVBTUlORzwvdGV4dD4KICA8bGluZSB4MT0iNDgwIiB5MT0iNTIwIiB4Mj0iODAwIiB5Mj0iNTIwIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIvPgogIDxjaXJjbGUgY3g9IjYwOCIgY3k9IjU0OCIgcj0iNSIgZmlsbD0iI2ZmM2IzYiIgb3BhY2l0eT0iMC45Ii8+CiAgPHRleHQgeD0iNjIwIiB5PSI1NTMiIHRleHQtYW5jaG9yPSJzdGFydCIKICAgIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWksIC1hcHBsZS1zeXN0ZW0sIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjYwMCIgbGV0dGVyLXNwYWNpbmc9IjMiCiAgICBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjUiPkxJVkU8L3RleHQ+Cjwvc3ZnPg=="></video>
 
-        <!-- CRICKCAST Watermark -->
-        <div class="watermark">
-            <div class="watermark-dot"></div>
-            <span class="watermark-text">CRICKCAST</span>
-        </div>
-    </div>
+<div class="video-container">
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            shaka.polyfill.installAll();
+<div class="shaka-video-container" data-shaka-player>
 
-            if (!shaka.Player.isBrowserSupported()) {
-                console.error('Browser not supported');
-                return;
-            }
+<video id="video" autoplay playsinline muted></video>
 
-            const video = document.querySelector('video');
-            const player = new shaka.Player();
-            await player.attach(video);
+<div id="loading" class="loading-overlay">
+<div class="spinner"></div>
+Analyzing the video...
+</div>
 
-            const container = document.querySelector('.shaka-video-container');
-            const ui = new shaka.ui.Overlay(player, container, video);
+</div>
 
-            ui.configure({
-                controlPanelElements: [
-                    'play_pause', 'time_and_duration', 'mute', 'volume',
-                    'spacer', 'language', 'captions', 'picture_in_picture',
-                    'quality', 'fullscreen'
-                ],
-                volumeBarColors: { base: 'purple', level: 'purple' },
-                seekBarColors: { base: 'white', buffered: 'red', played: 'blue' }
-            });
+</div>
 
-            let streamUrl = "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_HD_MOB/WDVLive/index.mpd?__hdnea__=st=1781152457~exp=1781174057~acl=/*~hmac=76667c31d78c59f410abd028eb41de07928b1817a18e72d5957fb4104355fb3f";
-            let drmConfig = {
-                clearKeys: {
-                    "3525c924e54154b39533d86b1c7a428a": "8548b566fc6608a7d3bd601ee5f3d889"
-                }
-            };
 
-            let cookieHeader = "__hdnea__=st=1781152457~exp=1781174057~acl=/*~hmac=76667c31d78c59f410abd028eb41de07928b1817a18e72d5957fb4104355fb3f";
+<!-- TELEGRAM POPUP (USES YOUR CSS) -->
 
-            player.configure({
-                drm: drmConfig,
-                streaming: {
-                    lowLatencyMode: true,
-                    bufferingGoal: 15,
-                    rebufferingGoal: 2,
-                    bufferBehind: 15,
-                    retryParameters: {
-                        timeout: 10000,
-                        maxAttempts: 5,
-                        baseDelay: 300,
-                        backoffFactor: 1.2
-                    }
-                }
-            });
+<div id="telegramModal" class="modal hidden">
 
-            player.getNetworkingEngine().registerRequestFilter((type, request) => {
-                request.headers['Referer'] = 'https://www.jiotv.com/';
-                request.headers['User-Agent'] = "plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
-                request.headers['Cookie'] = cookieHeader;
+<div class="modal-content">
 
-                if ((type === shaka.net.NetworkingEngine.RequestType.MANIFEST ||
-                     type === shaka.net.NetworkingEngine.RequestType.SEGMENT) &&
-                    request.uris[0] && !request.uris[0].includes('__hdnea=')) {
-                    const separator = request.uris[0].includes('?') ? '&' : '?';
-                    request.uris[0] += separator + cookieHeader;
-                }
-            });
+<h2>Join our Telegram</h2>
 
-            const attemptAutoplay = async () => {
-                try {
-                    video.muted = false;
-                    await video.play();
-                } catch (error) {
-                    video.muted = true;
-                    await video.play();
-                }
-            };
+<p>
+Stay updated with the latest
+<strong>Live Match Links</strong>
+and updates. Click below to join our official Telegram channel.
+</p>
 
-            player.addEventListener('error', (event) => console.error('Shaka Player Error:', event.detail));
+<button id="joinButton" class="btn">Join Telegram</button>
 
-            try {
-                await player.load(streamUrl);
-                if (video.readyState >= 3) {
-                    await attemptAutoplay();
-                } else {
-                    video.addEventListener('canplay', attemptAutoplay, { once: true });
-                }
-            } catch (error) {
-                console.error('Load error:', error);
-            }
+<button id="closeButton" class="btn">Already Joined</button>
 
-            // Unmute on first interaction
-            ['click', 'touchstart'].forEach(event => {
-                document.addEventListener(event, () => { if(video.muted) video.muted = false; }, { once: true });
-            });
-        });
-    </script>
-</body>
+</div>
+
+</div>
+
+
+<script>
+
+/* ================= STREAM ================= */
+
+let streamUrl =
+"https://in-mc-fblive.fancode.com/mumbai/142968_english_hls_0f00f082a944838_1ta-di_h264/index.m3u8";
+
+/* ================= PLAYER ================= */
+
+const video = document.getElementById("video");
+const loading = document.getElementById("loading");
+
+async function initPlayer(){
+
+if(!streamUrl){
+alert("Stream URL missing");
+return;
+}
+
+try{
+
+const player = new shaka.Player(video);
+
+const container = document.querySelector(".shaka-video-container");
+
+const ui = new shaka.ui.Overlay(player,container,video);
+
+ui.configure({
+
+controlPanelElements:[
+'play_pause',
+'mute',
+'time_and_duration',
+'spacer',
+'quality',
+'language',
+'picture_in_picture',
+'fullscreen',
+'overflow_menu'
+],
+
+addSeekBar:true
+
+});
+
+player.configure({
+streaming:{
+bufferingGoal:10,
+rebufferingGoal:2,
+bufferBehind:30
+}
+});
+
+await player.load(streamUrl);
+
+video.play().catch(()=>{
+video.muted=true;
+video.play();
+});
+
+video.addEventListener("playing",()=>{
+loading.style.display="none";
+});
+
+}
+
+catch(e){
+
+console.log("Shaka error:",e);
+
+video.src = streamUrl;
+
+video.play();
+
+video.addEventListener("playing",()=>{
+loading.style.display="none";
+});
+
+}
+
+}
+
+
+
+
+
+
+
+
+/* INIT PLAYER */
+
+document.addEventListener("DOMContentLoaded",initPlayer);
+
+
+</body>  
 </html>
