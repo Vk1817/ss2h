@@ -8,16 +8,14 @@
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css"/>
 
-    <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7VPXZYQPN"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-L7VPXZYQPN');
 </script>
-  <style>
+<style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
 
@@ -51,7 +49,6 @@ text-transform:uppercase;
 font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* --- Updated Modern Blocker Styles --- */
 .block-overlay{
 position:fixed;
 inset:0;
@@ -67,16 +64,16 @@ text-align:center;
 padding:40px;
 max-width:500px;
 width:90%;
-background:rgba(20, 20, 20, 0.95);
+background:rgba(20,20,20,0.95);
 border-radius:16px;
-border:1px solid rgba(255, 255, 255, 0.1);
+border:1px solid rgba(255,255,255,0.1);
 box-shadow:0 20px 50px rgba(0,0,0,0.5);
-animation: fadeInUp 0.6s ease-out;
+animation:fadeInUp 0.6s ease-out;
 }
 
-@keyframes fadeInUp {
-from { opacity: 0; transform: translateY(30px); }
-to { opacity: 1; transform: translateY(0); }
+@keyframes fadeInUp{
+from{opacity:0;transform:translateY(30px)}
+to{opacity:1;transform:translateY(0)}
 }
 
 .block-title{
@@ -86,22 +83,21 @@ color:#ffffff;
 text-transform:uppercase;
 letter-spacing:2px;
 margin-bottom:20px;
-text-shadow:0 0 10px rgba(255, 0, 0, 0.3);
+text-shadow:0 0 10px rgba(255,0,0,0.3);
 }
 
 .block-sub{
 font-size:14px;
 font-weight:500;
-color:rgba(255, 255, 255, 0.6);
+color:rgba(255,255,255,0.6);
 line-height:1.6;
 }
 
-/* Icon hidden as requested, but keeping structure if needed later */
-.block-icon{ display: none; }
-.block-note{ display: none; }
+.block-icon{display:none}
+.block-note{display:none}
 
 @media(max-width:700px){
-.custom-watermark{font-size:10px;top:8px;left:8px;}
+.custom-watermark{font-size:10px;top:8px;left:8px}
 .block-title{font-size:28px}
 .block-box{padding:25px}
 .block-sub{font-size:12px}
@@ -117,57 +113,44 @@ line-height:1.6;
 
 <script>
 (function(){
-  
-  function isSandboxedEnv(){
-    try {
-      if (window.self === window.top) return false;
-      if (window.frameElement && window.frameElement.hasAttribute("sandbox")) {
-        return true;
-      }
-      try {
-        document.domain = document.domain;
-        if (window.frameElement && !window.frameElement.getAttribute("sandbox")) {
-             return false;
-        }
-      } catch (e) {
-         return true;
-      }
-      return false;
-    } catch(e) {
-      return true;
-    }
-  }
-  function triggerBlockScreen(title, message){
-    const container = document.getElementById("player-container");
-    const video = document.getElementById("video");
-    
-    try {
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-    } catch(e){}
 
-    const overlay = document.createElement("div");
-    overlay.className = "block-overlay";
-    overlay.id = "sandbox-block-display";
-    overlay.innerHTML = `
+  function isSandboxedEnv(){
+    try{
+      if(window.self===window.top) return false;
+      if(window.frameElement&&window.frameElement.hasAttribute("sandbox")) return true;
+      try{
+        document.domain=document.domain;
+        if(window.frameElement&&!window.frameElement.getAttribute("sandbox")) return false;
+      }catch(e){return true}
+      return false;
+    }catch(e){return true}
+  }
+
+  function triggerBlockScreen(title,message){
+    const container=document.getElementById("player-container");
+    const video=document.getElementById("video");
+    try{video.pause();video.removeAttribute('src');video.load()}catch(e){}
+    const overlay=document.createElement("div");
+    overlay.className="block-overlay";
+    overlay.id="sandbox-block-display";
+    overlay.innerHTML=`
       <div class="block-box">
         <div class="block-title">${title}</div>
         <div class="block-sub">${message}</div>
-      </div>
-    `;
+      </div>`;
     document.body.appendChild(overlay);
-    container.style.display = 'none';
+    container.style.display='none';
   }
-  if(isSandboxedEnv()){
 
-    triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
+  if(isSandboxedEnv()){
+    triggerBlockScreen('Disable Sandbox','Opening Chrome Browser Only & Disable Ad blocker');
     return;
   }
+
   const CONFIG={
-    streamUrl:"https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports_HD1_BTS/WDVLive/index.mpd",
-    keyId:"965dc2ddb1d85138ad787999a7f30ca5",
-    key:"859695076e67fe961836b564db6d689c",
+    streamUrl:"https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports_HD1_Hindi_BTS/WDVLive/index.mpd",
+    keyId:"400131994b445d8c8817202248760fda",
+    key:"2d56cb6f07a75b9aff165d534ae2bfc4",
     cookieUrl:"https://allrounderid2.pages.dev/api/star-1-hindi.json"
   };
 
@@ -187,22 +170,22 @@ line-height:1.6;
     const ui=new shaka.ui.Overlay(player,container,video);
 
     ui.configure({
-  addBigPlayButton: true,
-  controlPanelElements: [
-    "mute",
-    "play_pause",
-    "time_and_duration",
-    "spacer",
-    "quality",
-    "picture_in_picture",
-    "fullscreen"
-  ],
-  seekBarColors: {
-    base: "white",
-    buffered: "red", 
-    played: "green"
-  }
-});
+      addBigPlayButton:true,
+      controlPanelElements:[
+        "mute",
+        "play_pause",
+        "time_and_duration",
+        "spacer",
+        "quality",
+        "picture_in_picture",
+        "fullscreen"
+      ],
+      seekBarColors:{
+        base:"white",
+        buffered:"red",
+        played:"green"
+      }
+    });
 
     player.configure({
       drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
@@ -232,8 +215,8 @@ line-height:1.6;
         let urlCookie=cookieValue.startsWith("__hdnea__=")?cookieValue.substring(10):cookieValue;
 
         if((type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
-        type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
-        !request.uris[0].includes("__hdnea__")){
+            type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
+            !request.uris[0].includes("__hdnea__")){
           const sep=request.uris[0].includes("?")?"&":"?";
           request.uris[0]+=sep+"__hdnea__="+urlCookie;
         }
@@ -245,9 +228,7 @@ line-height:1.6;
       video.play().catch(()=>{});
     }catch(e){}
 
-    video.addEventListener("play",()=>{
-      video.muted=false;
-    });
+    video.addEventListener("play",()=>{video.muted=false});
 
   });
 })();
