@@ -1,50 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<title>CRICKLY FANCODE LIVE WEB PLAYER</title>
-
-<meta name="referrer" content="no-referrer">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Star Sports 1 Hindi  CRICKCAST</title>
+<meta name="referrer" content="no-referrer">
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css"/>
 
-<!-- FONT -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L7VPXZYQPN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-<!-- YOUR MAIN CSS -->
-<link rel="stylesheet" href="style.css">
-
-<!-- SHAKA PLAYER -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
-
-<style>
-
-/* PLAYER ONLY STYLES */
-
-html,body{
-margin:0;
-padding:0;
-background:#000;
-height:100%;
-width:100%;
-overflow:hidden;
-font-family:'Poppins',sans-serif;
-}
-
-.video-container{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#000;
-}
+  gtag('config', 'G-L7VPXZYQPN');
+</script>
+  <style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
 
 .shaka-video-container{
-width:100%;
-height:100%;
+position:fixed;
+inset:0;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
 video{
@@ -54,177 +37,220 @@ object-fit:contain;
 background:#000;
 }
 
-/* LOADING */
-
-.loading-overlay{
+.custom-watermark{
 position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
+z-index:40;
+pointer-events:none;
+top:12px;
+left:12px;
+font-size:13px;
+font-weight:700;
+color:rgba(0,229,255,0.55);
+letter-spacing:2px;
+text-transform:uppercase;
+font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+
+/* --- Updated Modern Blocker Styles --- */
+.block-overlay{
+position:fixed;
+inset:0;
+z-index:99999;
 display:flex;
 align-items:center;
 justify-content:center;
-flex-direction:column;
-background:#000;
-color:#fff;
-z-index:2000;
-font-size:18px;
+background:radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+text-align:center;
 }
 
-.spinner{
-border:4px solid rgba(255,255,255,.2);
-border-top:4px solid #3b82f6;
-border-radius:50%;
-width:40px;
-height:40px;
-animation:spin 1s linear infinite;
-margin-bottom:12px;
+.block-box{
+padding:40px;
+max-width:500px;
+width:90%;
+background:rgba(20, 20, 20, 0.95);
+border-radius:16px;
+border:1px solid rgba(255, 255, 255, 0.1);
+box-shadow:0 20px 50px rgba(0,0,0,0.5);
+animation: fadeInUp 0.6s ease-out;
 }
 
-@keyframes spin{
-0%{transform:rotate(0deg)}
-100%{transform:rotate(360deg)}
+@keyframes fadeInUp {
+from { opacity: 0; transform: translateY(30px); }
+to { opacity: 1; transform: translateY(0); }
 }
 
+.block-title{
+font-size:42px;
+font-weight:800;
+color:#ffffff;
+text-transform:uppercase;
+letter-spacing:2px;
+margin-bottom:20px;
+text-shadow:0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+.block-sub{
+font-size:14px;
+font-weight:500;
+color:rgba(255, 255, 255, 0.6);
+line-height:1.6;
+}
+
+/* Icon hidden as requested, but keeping structure if needed later */
+.block-icon{ display: none; }
+.block-note{ display: none; }
+
+@media(max-width:700px){
+.custom-watermark{font-size:10px;top:8px;left:8px;}
+.block-title{font-size:28px}
+.block-box{padding:25px}
+.block-sub{font-size:12px}
+}
 </style>
-
 </head>
-
 <body>
 
-<div class="video-container">
-
-<div class="shaka-video-container" data-shaka-player>
-
-<video id="video" autoplay playsinline muted></video>
-
-<div id="loading" class="loading-overlay">
-<div class="spinner"></div>
-Analyzing the video...
+<div class="shaka-video-container" id="player-container">
+<video id="video" autoplay muted playsinline preload="metadata"></video>
+<div class="custom-watermark">CRICKCAST</div>
 </div>
-
-</div>
-
-</div>
-
-
-<!-- TELEGRAM POPUP (USES YOUR CSS) -->
-
-<div id="telegramModal" class="modal hidden">
-
-<div class="modal-content">
-
-<h2>Join our Telegram</h2>
-
-<p>
-Stay updated with the latest
-<strong>Live Match Links</strong>
-and updates. Click below to join our official Telegram channel.
-</p>
-
-<button id="joinButton" class="btn">Join Telegram</button>
-
-<button id="closeButton" class="btn">Already Joined</button>
-
-</div>
-
-</div>
-
 
 <script>
+(function(){
+  
+  function isSandboxedEnv(){
+    try {
+      if (window.self === window.top) return false;
+      if (window.frameElement && window.frameElement.hasAttribute("sandbox")) {
+        return true;
+      }
+      try {
+        document.domain = document.domain;
+        if (window.frameElement && !window.frameElement.getAttribute("sandbox")) {
+             return false;
+        }
+      } catch (e) {
+         return true;
+      }
+      return false;
+    } catch(e) {
+      return true;
+    }
+  }
+  function triggerBlockScreen(title, message){
+    const container = document.getElementById("player-container");
+    const video = document.getElementById("video");
+    
+    try {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    } catch(e){}
 
-/* ================= STREAM ================= */
+    const overlay = document.createElement("div");
+    overlay.className = "block-overlay";
+    overlay.id = "sandbox-block-display";
+    overlay.innerHTML = `
+      <div class="block-box">
+        <div class="block-title">${title}</div>
+        <div class="block-sub">${message}</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    container.style.display = 'none';
+  }
+  if(isSandboxedEnv()){
 
-let streamUrl =
-"https://in-mc-fblive.fancode.com/mumbai/142968_english_hls_0f00f082a944838_1ta-di_h264/index.m3u8";
+    triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
+    return;
+  }
+  const CONFIG={
+    streamUrl:"https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports_HD1_BTS/WDVLive/index.mpd",
+    keyId:"965dc2ddb1d85138ad787999a7f30ca5",
+    key:"859695076e67fe961836b564db6d689c",
+    cookieUrl:"https://allrounderid2.pages.dev/api/star-1-hindi.json"
+  };
 
-/* ================= PLAYER ================= */
+  document.addEventListener("DOMContentLoaded",async()=>{
 
-const video = document.getElementById("video");
-const loading = document.getElementById("loading");
+    shaka.polyfill.installAll();
+    if(!shaka.Player.isBrowserSupported()) return;
 
-async function initPlayer(){
+    const video=document.getElementById("video");
+    const container=document.getElementById("player-container");
 
-if(!streamUrl){
-alert("Stream URL missing");
-return;
-}
+    video.muted=true;
 
-try{
+    const player=new shaka.Player();
+    await player.attach(video);
 
-const player = new shaka.Player(video);
+    const ui=new shaka.ui.Overlay(player,container,video);
 
-const container = document.querySelector(".shaka-video-container");
-
-const ui = new shaka.ui.Overlay(player,container,video);
-
-ui.configure({
-
-controlPanelElements:[
-'play_pause',
-'mute',
-'time_and_duration',
-'spacer',
-'quality',
-'language',
-'picture_in_picture',
-'fullscreen',
-'overflow_menu'
-],
-
-addSeekBar:true
-
+    ui.configure({
+  addBigPlayButton: true,
+  controlPanelElements: [
+    "mute",
+    "play_pause",
+    "time_and_duration",
+    "spacer",
+    "quality",
+    "picture_in_picture",
+    "fullscreen"
+  ],
+  seekBarColors: {
+    base: "white",
+    buffered: "red", 
+    played: "green"
+  }
 });
 
-player.configure({
-streaming:{
-bufferingGoal:10,
-rebufferingGoal:2,
-bufferBehind:30
-}
-});
+    player.configure({
+      drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
+      manifest:{defaultPresentationDelay:5},
+      streaming:{
+        lowLatencyMode:true,
+        bufferingGoal:10,
+        rebufferingGoal:2,
+        safeSeekOffset:5
+      }
+    });
 
-await player.load(streamUrl);
+    let cookieValue="";
 
-video.play().catch(()=>{
-video.muted=true;
-video.play();
-});
+    try{
+      const response=await fetch(CONFIG.cookieUrl,{cache:"no-store"});
+      const data=await response.json();
+      cookieValue=data.cookie||"";
+    }catch(e){}
 
-video.addEventListener("playing",()=>{
-loading.style.display="none";
-});
+    if(cookieValue){
+      player.getNetworkingEngine().registerRequestFilter((type,request)=>{
+        request.headers["Referer"]="https://www.jiotv.com/";
+        request.headers["User-Agent"]="plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
+        request.headers["Cookie"]=cookieValue;
 
-}
+        let urlCookie=cookieValue.startsWith("__hdnea__=")?cookieValue.substring(10):cookieValue;
 
-catch(e){
+        if((type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
+        type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
+        !request.uris[0].includes("__hdnea__")){
+          const sep=request.uris[0].includes("?")?"&":"?";
+          request.uris[0]+=sep+"__hdnea__="+urlCookie;
+        }
+      });
+    }
 
-console.log("Shaka error:",e);
+    try{
+      await player.load(CONFIG.streamUrl);
+      video.play().catch(()=>{});
+    }catch(e){}
 
-video.src = streamUrl;
+    video.addEventListener("play",()=>{
+      video.muted=false;
+    });
 
-video.play();
-
-video.addEventListener("playing",()=>{
-loading.style.display="none";
-});
-
-}
-
-}
-
-
-
-
-
-
-
-
-/* INIT PLAYER */
-
-document.addEventListener("DOMContentLoaded",initPlayer);
-
-
-</body>  
+  });
+})();
+</script>
+</body>
 </html>
