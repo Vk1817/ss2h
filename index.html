@@ -35,18 +35,26 @@ object-fit:contain;
 background:#000;
 }
 
+/* Watermark: top-right corner, small, subtle cyan, fades in/out gently */
 .custom-watermark{
 position:absolute;
 z-index:40;
 pointer-events:none;
-top:12px;
-left:12px;
-font-size:13px;
+top:14px;
+right:14px;
+font-size:12px;
 font-weight:700;
-color:rgba(0,229,255,0.55);
-letter-spacing:2px;
+color:rgba(0,229,255,0.35);
+letter-spacing:3px;
 text-transform:uppercase;
 font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+text-shadow: 0 0 8px rgba(0,229,255,0.25);
+animation: wm-breathe 6s ease-in-out infinite;
+}
+
+@keyframes wm-breathe{
+0%,100%{ opacity:0.35 }
+50%      { opacity:0.60 }
 }
 
 .block-overlay{
@@ -97,7 +105,7 @@ line-height:1.6;
 .block-note{display:none}
 
 @media(max-width:700px){
-.custom-watermark{font-size:10px;top:8px;left:8px}
+.custom-watermark{font-size:10px;top:8px;right:8px;letter-spacing:2px}
 .block-title{font-size:28px}
 .block-box{padding:25px}
 .block-sub{font-size:12px}
